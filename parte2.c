@@ -33,9 +33,9 @@ void printRelogio(Relogio *relogio, int processo) {
 void produzirRelogio(int threadId) {
     //cria o Relogio
     Relogio *relogio = (Relogio*) malloc(sizeof(Relogio));
-    relogio->p[0] = rand() % 10000;
-    relogio->p[1] = rand() % 10000;
-    relogio->p[2] = rand() % 10000;
+    relogio->p[0] = rand() % 10;
+    relogio->p[1] = rand() % 10;
+    relogio->p[2] = rand() % 10;
     
     pthread_mutex_lock(&mutex); 
     //regiao critica
@@ -138,4 +138,3 @@ int main() {
     pthread_cond_destroy(&condCheio);
     return 0;
 }
-
