@@ -26,16 +26,16 @@ pthread_cond_t condVazio;
 int tempoProd; 
 int tempoCons; 
 
-void printRelogio(Relogio *Relogio, int processo) {
-   printf("Thread: %d, Relogio consumido: (%d, %d, %d)\n", processo, Relogio->p[0], Relogio->p[1], Relogio->p[2]);
+void printRelogio(Relogio *relogio, int processo) {
+   printf("Thread: %d, Relogio consumido: (%d, %d, %d)\n", processo, relogio->p[0], relogio->p[1], relogio->p[2]);
 }
 
 void produzirRelogio(int threadId) {
     //cria o Relogio
-    Relogio *Relogio = (Relogio*)malloc(sizeof(Relogio));
-    Relogio->p[0] = rand() % 10000;
-    Relogio->p[1] = rand() % 10000;
-    Relogio->p[2] = rand() % 10000;
+    Relogio *relogio = (Relogio*) malloc(sizeof(Relogio));
+    relogio->p[0] = rand() % 10000;
+    relogio->p[1] = rand() % 10000;
+    relogio->p[2] = rand() % 10000;
     
     pthread_mutex_lock(&mutex); 
     //regiao critica
@@ -44,26 +44,26 @@ void produzirRelogio(int threadId) {
         pthread_cond_wait(&condCheio, &mutex);
     }
     
-    filaRelogio [contador] = *Relogio; //insere no final da fila
+    filaRelogio [contador] = *relogio; //insere no final da fila
     contador++;
-    printf("Thread: %d, Relogio produzido: (%d, %d, %d)\n", threadId, Relogio->p[0], Relogio->p[1], Relogio->p[2]);
+    printf("Thread: %d, Relogio produzido: (%d, %d, %d)\n", threadId, relogio->p[0], relogio->p[1], relogio->p[2]);
     
     pthread_mutex_unlock(&mutex); //desbloqueia acesso a região critica
     pthread_cond_signal(&condVazio); //envia sinal que a fila não está vazia
     
-    free(Relogio);
+    free(relogio);
 }
 
 void consumirRelogio(int threadId) {
     pthread_mutex_lock(&mutex);
     
     while  (contador == 0) { 
-        printf("Fila vazia! Thread não pode consumir. \n", threadId);
+        printf("Fila vazia! Thread %d não pode consumir. \n", threadId);
         pthread_cond_wait(&condVazio, &mutex);
     }
     
-    Relogio Relogio = filaRelogio[0];
-    printRelogio(&Relogio, threadId);
+    Relogio relogio = filaRelogio[0];
+    printRelogio(&relogio, threadId);
     for (int i = 0; i < contador-1; i++) { 
         filaRelogio[i] = filaRelogio[i+1];
     }
@@ -138,3 +138,4 @@ int main() {
     pthread_cond_destroy(&condCheio);
     return 0;
 }
+
